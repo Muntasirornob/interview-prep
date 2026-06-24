@@ -1,0 +1,24 @@
+*.env
+.env.*
+!/.env.example
+
+
+__pycache__/
+*.pyc
+
+# Ignore node modules and build output
+node_modules/
+.next/
+dist/
+build/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+*.log
+
+# Ignore IDE settings
+.vscode/
+.idea/
