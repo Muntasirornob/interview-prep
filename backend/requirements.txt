@@ -6,4 +6,7 @@ pydantic
 python-dotenv
 pymupdf
 pypdf
+fastapi
+uvicorn
+python-multipart
 
