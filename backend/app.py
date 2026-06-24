@@ -5,10 +5,24 @@ from typing import Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
+from chains.ats_chain import ATSResponse, analyze_resume
 from services.pdf_parser import extract_text_from_pdf
 from services.resume_extractor import clean_resume_text
+
+
+import os
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
+
+llm= ChatOpenAI(
+    model_name=os.getenv("OPENAI_API_MODEL", "gpt-4o"),
+    temperature=0,
+    max_tokens=2000,
+    openai_api_key=os.getenv("OPENAI_API_KEY")      
+)   
 
 
 class ResumeUploadResponse(BaseModel):
@@ -16,6 +30,18 @@ class ResumeUploadResponse(BaseModel):
 	filename: str
 	raw_text: str
 	cleaned_resume: str
+
+
+class ATSAnalyzeRequest(BaseModel):
+	cleaned_text: str = Field(..., min_length=1)
+
+
+class ATSAnalyzeResponse(BaseModel):
+	success: bool
+	ats_score: int
+	strengths: list[str]
+	weaknesses: list[str]
+	missing_keywords: list[str]
 
 
 def parse_cors_origins() -> list[str]:
@@ -85,4 +111,30 @@ async def upload_resume(file: Optional[UploadFile] = File(default=None)):
 		filename=file.filename,
 		raw_text=raw_text,
 		cleaned_resume=cleaned_resume,
+	)
+
+
+@app.post("/resume-analyze", response_model=ATSAnalyzeResponse)
+def resume_analyze(payload: ATSAnalyzeRequest):
+	if not payload.cleaned_text.strip():
+		raise HTTPException(status_code=400, detail="cleaned_text is required.")
+
+	try:
+		result =analyze_resume(payload.cleaned_text, llm)
+	except ValueError as exc:
+		raise HTTPException(status_code=422, detail=str(exc)) from exc
+	except Exception as exc:
+		raise HTTPException(status_code=500, detail=f"ATS analysis failed: {exc}") from exc
+
+	if isinstance(result, ATSResponse):
+		analysis = result
+	else:
+		analysis = ATSResponse.model_validate(result)
+
+	return ATSAnalyzeResponse(
+		success=True,
+		ats_score=analysis.ats_score,
+		strengths=analysis.strengths,
+		weaknesses=analysis.weaknesses,
+		missing_keywords=analysis.missing_keywords,
 	)

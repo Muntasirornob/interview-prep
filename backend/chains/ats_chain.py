@@ -1,8 +1,13 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.prompts import ChatPromptTemplate
-from pydantic import BaseModel
+import os
 from typing import List
-from prompts.promts_reader import read_promts
+
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from pydantic import BaseModel
+
+from promts.promts_reader import read_promts
+
+
 
 class ATSResponse(BaseModel):
     ats_score: int
@@ -13,16 +18,20 @@ class ATSResponse(BaseModel):
     summary: str
 
 
-def create_context(resume_text):
-    promts = read_promts()
-    return f"""
-    System Prompt: {promts.get("ats_prompt.md", "")}
-    Resume: {resume_text}
-    """
+def create_context(resume_text: str) -> str:
+    prompts = read_promts()
+    return prompts.get("ats.md", "")
+
 
 def analyze_resume(resume_text: str, llm):
-    context = create_context(resume_text)
-    prompt = ChatPromptTemplate.from_messages([("human", context)])
-    print(prompt)
-    response = llm.predict_messages([prompt])
-    return response
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", create_context(resume_text)),
+            ("human", "Resume: {resume_text}"),
+        ]
+    )
+    structured_llm = llm.with_structured_output(ATSResponse)
+    chain = prompt | structured_llm
+    return chain.invoke({"resume_text": resume_text})
+
+

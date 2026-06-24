@@ -1,6 +1,6 @@
 import os 
 
-PROMTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "promts")
+PROMTS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def read_promts():
     promts = {}
