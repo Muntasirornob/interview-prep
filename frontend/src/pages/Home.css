@@ -1,0 +1,20 @@
+.home-shell {
+  display: grid;
+  place-items: center;
+}
+
+.home-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.home-card::after {
+  content: '';
+  position: absolute;
+  inset: auto -20% -50% auto;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.14), transparent 70%);
+  pointer-events: none;
+}
