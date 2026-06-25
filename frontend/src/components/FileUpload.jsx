@@ -9,7 +9,7 @@ function getApiBaseUrl() {
   return import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 }
 
-function FileUpload({ onATSAnalysisDisplayed }) {
+function FileUpload() {
   const inputRef = useRef(null)
   const dragDepthRef = useRef(0)
   const [selectedFileName, setSelectedFileName] = useState('')
@@ -48,6 +48,7 @@ function FileUpload({ onATSAnalysisDisplayed }) {
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/resume/upload`, {
         method: 'POST',
+        credentials: 'include',
         body: formData,
       })
 
@@ -60,6 +61,7 @@ function FileUpload({ onATSAnalysisDisplayed }) {
       setSelectedFileName(responseData?.filename || file.name)
       setResumeData(responseData)
   setCleanedText(responseData?.cleaned_resume || '')
+        window.localStorage.setItem('resume_upload_data', JSON.stringify(responseData || {}))
       setIsToastVisible(true)
 
       if (inputRef.current) {
@@ -93,6 +95,7 @@ function FileUpload({ onATSAnalysisDisplayed }) {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ cleaned_text: cleanedText }),
       })
 
@@ -103,7 +106,7 @@ function FileUpload({ onATSAnalysisDisplayed }) {
       }
 
       setAnalysisData(responseData)
-      onATSAnalysisDisplayed?.(responseData)
+      window.localStorage.setItem('resume_ats_data', JSON.stringify(responseData || {}))
     } catch (error) {
       setAnalysisError(error instanceof Error ? error.message : 'Analysis failed. Please try again.')
     } finally {

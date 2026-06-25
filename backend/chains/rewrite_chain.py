@@ -1,6 +1,6 @@
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from promts.promts_reader import get_rewrite_prompt
 
@@ -60,20 +60,29 @@ class RewrittenResume(BaseModel):
     education:      List[EducationEntry]
     certifications: List[Certification]  = Field(default_factory=list)
 
-def create_context(resume, ats, skills, job_role, job_description):
-    return f"""
-    System Prompt : {get_rewrite_prompt()}
-    Original Resume: {resume}
-    ATS Analysis: {ats}
-    Skills: {skills}
-    Job Role Seeking: {job_role}
-    Job Description: {job_description}
-    """
-
 def rewrite_resume_chain(resume, ats, skills, job_role, job_description, llm):
-    context = create_context(resume, ats, skills, job_role, job_description)
-    prompt = ChatPromptTemplate.from_messages([("human", context)])
-    structured_llm = llm.with_structured_output(RewrittenResume)
-    chain = prompt | structured_llm
+    system_prompt = get_rewrite_prompt()
+    human_prompt = f"""
+Original Resume:
+{resume}
 
-    return chain
+ATS Analysis:
+{ats}
+
+Skills:
+{skills}
+
+Job Role Seeking:
+{job_role}
+
+Job Description:
+{job_description}
+"""
+
+    structured_llm = llm.with_structured_output(RewrittenResume)
+    messages = [
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=human_prompt),
+    ]
+
+    return structured_llm.invoke(messages)

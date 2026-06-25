@@ -16,3 +16,8 @@ def get_skills_prompt():
     prompt_path = os.path.join(PROMTS_DIR, "skills.md")
     with open(prompt_path, "r", encoding="utf-8") as file:
         return file.read()
+    
+def get_format_prompt():
+    prompt_path = os.path.join(PROMTS_DIR, "format.md")
+    with open(prompt_path, "r", encoding="utf-8") as file:
+        return file.read()
