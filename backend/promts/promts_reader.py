@@ -2,10 +2,17 @@ import os
 
 PROMTS_DIR = os.path.dirname(os.path.abspath(__file__))
 
-def read_promts():
-    promts = {}
-    for filename in os.listdir(PROMTS_DIR):
-        if filename.endswith(".md"):
-            with open(os.path.join(PROMTS_DIR, filename), "r", encoding="utf-8") as f:
-                promts[filename] = f.read()
-    return promts
+def get_ats_prompt():
+    prompt_path = os.path.join(PROMTS_DIR, "ats.md")
+    with open(prompt_path, "r", encoding="utf-8") as file:
+        return file.read()
+    
+def get_rewrite_prompt():
+    prompt_path = os.path.join(PROMTS_DIR, "rewrite.md")
+    with open(prompt_path, "r", encoding="utf-8") as file:
+        return file.read()
+
+def get_skills_prompt():
+    prompt_path = os.path.join(PROMTS_DIR, "skills.md")
+    with open(prompt_path, "r", encoding="utf-8") as file:
+        return file.read()

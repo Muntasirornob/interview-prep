@@ -5,7 +5,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 
-from promts.promts_reader import read_promts
+from promts.promts_reader import get_ats_prompt 
 
 
 
@@ -19,7 +19,7 @@ class ATSResponse(BaseModel):
 
 
 def create_context(resume_text: str) -> str:
-    prompts = read_promts()
+    prompts = get_ats_prompt()
     return prompts.get("ats.md", "")
 
 
