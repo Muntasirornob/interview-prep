@@ -9,4 +9,5 @@ pypdf
 fastapi
 uvicorn
 python-multipart
+aiohttp
 

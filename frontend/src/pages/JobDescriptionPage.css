@@ -1,0 +1,9 @@
+.job-description-shell {
+  display: grid;
+  place-items: center;
+}
+
+.job-description-card {
+  position: relative;
+  overflow: hidden;
+}

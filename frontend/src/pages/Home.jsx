@@ -1,7 +1,7 @@
 import FileUpload from '../components/FileUpload'
 import './Home.css'
 
-function Home() {
+function Home({ onGoToJobDescription }) {
   return (
     <main className="home-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <section className="home-card mx-auto flex w-full max-w-3xl flex-col items-center rounded-[2rem] border border-white/70 bg-white/80 px-5 py-10 text-center shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur-sm sm:px-8 sm:py-14">
@@ -16,6 +16,16 @@ function Home() {
 
         <div className="mt-8 w-full">
           <FileUpload />
+        </div>
+
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={onGoToJobDescription}
+            className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50"
+          >
+            Add Job Description
+          </button>
         </div>
       </section>
     </main>

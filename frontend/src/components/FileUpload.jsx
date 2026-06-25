@@ -9,7 +9,7 @@ function getApiBaseUrl() {
   return import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 }
 
-function FileUpload() {
+function FileUpload({ onATSAnalysisDisplayed }) {
   const inputRef = useRef(null)
   const dragDepthRef = useRef(0)
   const [selectedFileName, setSelectedFileName] = useState('')
@@ -103,6 +103,7 @@ function FileUpload() {
       }
 
       setAnalysisData(responseData)
+      onATSAnalysisDisplayed?.(responseData)
     } catch (error) {
       setAnalysisError(error instanceof Error ? error.message : 'Analysis failed. Please try again.')
     } finally {

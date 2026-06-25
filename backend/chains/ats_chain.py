@@ -19,8 +19,8 @@ class ATSResponse(BaseModel):
 
 
 def create_context(resume_text: str) -> str:
-    prompts = get_ats_prompt()
-    return prompts.get("ats.md", "")
+    return get_ats_prompt()
+    
 
 
 def analyze_resume(resume_text: str, llm):
